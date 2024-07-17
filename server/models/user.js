@@ -14,11 +14,17 @@ const userSchema = new mongoose.Schema({
 });
 
 userSchema.methods.generateAuthToken = function () {
+<<<<<<< Updated upstream
   const token = jwt.sign(
     { _id: this._id, isAdmin: this.isAdmin, isStudent: this.isStudent, isWorker: this.isWorker },
     process.env.JWTPRIVATEKEY,
     { expiresIn: "7d" }
   );
+=======
+  const token = jwt.sign({ _id: this._id, isAdmin: this.isAdmin, isStudent: this.isStudent, isWorker: this.isWorker }, process.env.JWTPRIVATEKEY, {
+    expiresIn: "7d",
+  });
+>>>>>>> Stashed changes
   return token;
 };
 
