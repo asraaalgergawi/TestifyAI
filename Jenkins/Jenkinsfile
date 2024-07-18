@@ -1,5 +1,72 @@
 pipeline {
     agent any
+    environment {
+       DB=mongodb+srv://asraaalgergawi:fWSYi50E0JKrZR8t@cluster0.jnqdzu6.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+       EMAIL_USER=your-email@gmail.com
+       EMAIL_PASS=your-email-password
+       PORT=3001
+       JWTPRIVATEKEY=123
+       BCRYPT_SALT=10
+
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git 'git@github.com:asraaalgergawi/TestifyAI.git'
+            }
+        }
+        stage('Build') {
+            steps {
+                script {
+                    docker.build('your-node-app', '-f server/Dockerfile .')
+                    docker.build('your-react-app', '-f client/Dockerfile .')
+                }
+            }
+        }
+        stage('Test') {
+            steps {
+                script {
+                    docker.image('your-node-app').inside {
+                        sh 'npm install'
+                        sh 'npm test'
+                    }
+                    docker.image('your-react-app').inside {
+                        sh 'npm install'
+                        sh 'npm test'
+                    }
+                }
+            }
+        }
+        stage('Deploy') {
+            steps {
+                script {
+                    docker.image('your-node-app').inside {
+                        sh 'npm run build'
+                        sh 'npm start'
+                    }
+                    docker.image('your-react-app').inside {
+                        sh 'npm run build'
+                        sh 'serve -s build'
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
+        }
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed!'
+        }
+    }
+}
+=======
     stages {
         stage('Clone repository') {
             steps {
