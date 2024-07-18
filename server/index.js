@@ -67,11 +67,9 @@ const path = require("path");
 const cors = require("cors");
 
 const axios = require('axios');
-const connection = require("./config/db");
+const connection = require("./db");
 const usersRoutes = require("./routes/users");
 const authRoutes = require('./routes/auth');
-const passwordResetRoutes = require('./routes/passwordReset');
-
 const app = express();
 
 // Connect to database
@@ -92,7 +90,6 @@ app.use(function (req, res, next) {
 
 // Routes
 app.use("/api/auth", authRoutes);
-app.use("/api/resetpassword", passwordResetRoutes);
 app.use("/api/users", usersRoutes);
 
 // Product search route
