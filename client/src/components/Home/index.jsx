@@ -7,7 +7,7 @@ const Home = () => {
     <div className={styles.home_container}>
       <div className={styles.home_form_container}>
         <div className={styles.frame}>
-          <h1>Welcome to Our QA Tool!</h1>
+          <h1>Welcome to  QA Tool!</h1>
           
     
         
