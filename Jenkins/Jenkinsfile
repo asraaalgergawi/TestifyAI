@@ -1,70 +1,49 @@
 pipeline {
     agent any
-
-    environment {
-       DB=mongodb+srv://asraaalgergawi:fWSYi50E0JKrZR8t@cluster0.jnqdzu6.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
-       EMAIL_USER=your-email@gmail.com
-       EMAIL_PASS=your-email-password
-       PORT=3001
-       JWTPRIVATEKEY=123
-       BCRYPT_SALT=10
-
-    }
-
     stages {
-        stage('Checkout') {
+        stage('Clone repository') {
             steps {
-                git 'git@github.com:asraaalgergawi/TestifyAI.git'
+                git 'https://github.com/username/my-node-app.git'
             }
         }
+
         stage('Build') {
             steps {
                 script {
-                    docker.build('your-node-app', '-f server/Dockerfile .')
-                    docker.build('your-react-app', '-f client/Dockerfile .')
+                    dockerImage = docker.build("username/my-node-app:latest")
                 }
             }
         }
+
         stage('Test') {
             steps {
                 script {
-                    docker.image('your-node-app').inside {
-                        sh 'npm install'
-                        sh 'npm test'
-                    }
-                    docker.image('your-react-app').inside {
-                        sh 'npm install'
-                        sh 'npm test'
+                    docker.image("username/my-node-app:latest").inside {
+                        // הפקודה שמריצה את קובץ הבדיקות יחידה
+                        sh 'python -m unittest tests/test_calc.py'
                     }
                 }
             }
         }
+
+        stage('Push Docker image') {
+            steps {
+                script {
+                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub') {
+                        dockerImage.push()
+                    }
+                }
+            }
+        }
+
         stage('Deploy') {
             steps {
                 script {
-                    docker.image('your-node-app').inside {
-                        sh 'npm run build'
+                    docker.image("username/my-node-app:latest").inside {
                         sh 'npm start'
-                    }
-                    docker.image('your-react-app').inside {
-                        sh 'npm run build'
-                        sh 'serve -s build'
                     }
                 }
             }
         }
     }
-
-    post {
-        always {
-            cleanWs()
-        }
-        success {
-            echo 'Pipeline completed successfully!'
-        }
-        failure {
-            echo 'Pipeline failed!'
-        }
-    }
 }
-
